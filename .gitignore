@@ -1,0 +1,34 @@
+# Build folders
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code / VS Config
+.vscode/
+.vs/
+
+# Logs
+*.log
+
+# Secrets
+secrets.json
+appsettings.Development.json
+
+# Publish profiles
+Properties/PublishProfiles/
+
+# Azure settings (optional - store in Key Vault / Azure App Config instead)
+appsettings.*.json
+
+# DotNet tools
+*.dbmdl
+*.bak
+*.mdf
+*.ldf
