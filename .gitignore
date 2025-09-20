@@ -25,7 +25,9 @@ appsettings.Development.json
 Properties/PublishProfiles/
 
 # Azure settings (optional - store in Key Vault / Azure App Config instead)
-appsettings.*.json
+appsettings.Development.json
+appsettings.*.local.json
+
 
 # DotNet tools
 *.dbmdl
