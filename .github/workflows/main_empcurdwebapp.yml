@@ -23,15 +23,15 @@ jobs:
 
       # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore EmpCurdAzureRepo.sln
+        run: dotnet restore EmpCurdAzureRepo/EmpCurdAzureRepo.sln
 
       # 4️⃣ Build solution
       - name: Build solution
-        run: dotnet build EmpCurdAzureRepo.sln -c Release --no-restore
+        run: dotnet build EmpCurdAzureRepo/EmpCurdAzureRepo.sln -c Release --no-restore
 
       # 5️⃣ Publish project
       - name: Publish project
-        run: dotnet publish EmpCurdAzureRepo.csproj -c Release -o ./publish
+        run: dotnet publish EmpCurdAzureRepo/EmpCurdAzureRepo.csproj -c Release -o ./publish
 
       # 6️⃣ Login to Azure using Service Principal JSON
       - name: Login to Azure
@@ -43,5 +43,5 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'empcurdwebapp'  # Your Azure Web App name
+          app-name: 'empcurdwebapp'
           package: ./publish
