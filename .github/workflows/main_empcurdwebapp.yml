@@ -21,22 +21,30 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # 3️⃣ Restore dependencies
-      - name: Restore NuGet packages
+      # 3️⃣ Restore NuGet packages
+      - name: Restore dependencies
         run: dotnet restore EmpCurdAzureRepo.sln
 
       # 4️⃣ Build solution
       - name: Build solution
         run: dotnet build EmpCurdAzureRepo.sln -c Release --no-restore
 
-      # 5️⃣ Publish project to 'publish' folder
+      # 5️⃣ Publish project
       - name: Publish project
         run: dotnet publish EmpCurdAzureRepo.csproj -c Release -o ./publish
 
-      # 6️⃣ Deploy to Azure using publish profile
+      # 6️⃣ Login to Azure using Service Principal
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      # 7️⃣ Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'empcurdwebapp'                     # Replace with your App Service name
+          app-name: 'empcurdwebapp'  # Your Azure Web App name
           package: ./publish
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
