@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - empcurdwebapp
+name: Build and deploy ASP.Net Core 8 App to Azure Web App - empcurdwebapp
 
 on:
   push:
@@ -10,56 +7,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: windows-latest
-    permissions:
-      contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      # 2️⃣ Setup .NET 8
+      - name: Setup .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      # 3️⃣ Restore dependencies
+      - name: Restore NuGet packages
+        run: dotnet restore EmpCurdAzureRepo.sln
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      # 4️⃣ Build solution
+      - name: Build solution
+        run: dotnet build EmpCurdAzureRepo.sln -c Release --no-restore
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+      # 5️⃣ Publish project to 'publish' folder
+      - name: Publish project
+        run: dotnet publish EmpCurdAzureRepo.csproj -c Release -o ./publish
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_49C66B63400B4714BF303D828D1C240E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_05A8F54A678A484EABE7337EBC3D5821 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_64EE27A10CF2472CA6D98A154A68B200 }}
-
+      # 6️⃣ Deploy to Azure using publish profile
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'empcurdwebapp'
-          slot-name: 'Production'
-          package: .
-          
+          app-name: 'empcurdwebapp'                     # Replace with your App Service name
+          package: ./publish
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
